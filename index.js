@@ -22,6 +22,22 @@ function createSafeSender(res) {
     };
 }
 
+// ── Global CORS middleware — must run before every route ──────────────────────
+// Handles preflight OPTIONS and sets headers for ALL responses.
+app.use((req, res, next) => {
+    const origin = req.headers.origin || '*';
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, HEAD');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With, Range, Authorization, Cookie');
+    res.setHeader('Access-Control-Expose-Headers', 'Content-Range, Content-Length, Accept-Ranges, Content-Type');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    if (req.method === 'OPTIONS') {
+        return res.sendStatus(204);
+    }
+    next();
+});
+// ─────────────────────────────────────────────────────────────────────────────
+
 function isOriginAllowed(origin) {
     if (CONFIG.ALLOWED_ORIGINS.includes("*")) {
         return true;
